@@ -1,6 +1,8 @@
 export const passLog=new Map()
 export const errorLog=new Map()
 
+let debug=false
+
 export class Tests {
     constructor(name) {
         this.name = name;
@@ -14,14 +16,14 @@ export class Tests {
     }
     Test(describe, test) {
         if (this.index == 0) {
-            console.log("TEST START: " + this.name);
+            debug?console.log("TEST START: " + this.name):""
         }
         this.index++;
         let result;
         try {
             result = test();
             let exp=`Test ${this.index}: ${describe} : ${result?"PASS":"ERROR"}`
-            console.log(exp);
+            debug?console.log(exp):""
             if (result) {
                 this.passLogs.push(exp)
                 this.pass++;
@@ -31,7 +33,7 @@ export class Tests {
             }
         } catch (e) {
             let exp=`Test ${this.index}: ${describe} : ERROR - ${e.message}`
-            console.log(exp);
+            debug?console.log(exp):""
             this.errorLogs.push(exp)
             this.error++;
         }

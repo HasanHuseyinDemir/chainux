@@ -19,11 +19,8 @@ export function html(e,...ar){
 
         function process(elm){
             //debugger;
-            if(elm.hasAttributes()){for (let attr of elm.attributes) {if(elm.getAttribute(attr.name)==key){
-                //need process
-                elm.setAttribute(attr.name,args.shift())}}
-            }
-            if(elm.tagName==="CHNX"){
+            if(elm.hasAttributes()){for (let attr of elm.attributes) {if(elm.getAttribute(attr.name)==key){elm.setAttribute(attr.name,args.shift())}}}
+            if(elm.tagName.toLowerCase()==="chnx"){
                 let t=args.shift()
 
                 if(is("immutable",t)){

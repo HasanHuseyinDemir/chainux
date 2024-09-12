@@ -89,6 +89,15 @@ export function iss(data) {
     if (data instanceof HTMLElement) {
         types.push("element");
     }
+    if (data instanceof DocumentFragment) {
+        types.push("documentFragment");
+    }
+    if(data instanceof DocumentFragment||data instanceof HTMLElement){
+        types.push("appendable")
+    }
+    if(data instanceof Text){
+        types.push("textNode")
+    }
     if (typeof data === "function") {
         types.push("function");
     }
