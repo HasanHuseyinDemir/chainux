@@ -1,6 +1,7 @@
 const key="#!CHNX!#"
 const eKey="<chnx></chnx>"
 
+export const components = componentMixin();
 function HTML(string) {return document.createRange().createContextualFragment(string)}
 
 export function html(e,...ar){
@@ -27,6 +28,8 @@ export function html(e,...ar){
                     }
                 }
             }
+            
+
             if(elm.tagName==="CHNX"){
                 let t=args.shift()
                 if(typeof t=="function"){
@@ -45,6 +48,7 @@ export function html(e,...ar){
                     return 
                 }
             }
+
         }
         [element,...element.querySelectorAll("*")].forEach(process)
     }

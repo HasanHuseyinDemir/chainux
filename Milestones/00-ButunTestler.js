@@ -2,7 +2,7 @@
 //import { elementveAnahtarlar } from "./02-Element&Anahtarlar.js";
 
 import { html } from "../Library/chainux.js";
-
+/*
 let count=0
 let node=new Text(count)
 
@@ -27,4 +27,5 @@ function wrap3(){
     return html`<div>altı ${"6"} ${wrap2}</div>`
 }
 
-document.querySelector("#app").appendChild(wrap3())
+document.querySelector("#app").appendChild(wrap3())*/
+
