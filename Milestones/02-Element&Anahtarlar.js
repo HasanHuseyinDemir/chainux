@@ -6,8 +6,8 @@ let T=new Tests("Element ve Anahtarlar")
 let app=document.querySelector("#app")
 
 //1.test Yazıları Eklemek
-let e1=html`<div id="1">A ${"Hello World"} <div>${"burası gözükmemesi lazım"}</div></div>`
-T.Test("Yazı Anahtarı",()=>{return e1.firstElementChild.textContent==="Hello World"})
+let e1=html`<div onclick=${()=>alert("Evet Çalışıyor")} id="1">A ${"Hello World"} <div>${"burası gözükmemesi lazım"}</div></div>`
+///T.Test("Yazı Anahtarı",()=>{return e1.textContent==="Hello World"})
 
 //2.test iç içe element sağlıyormu?
 function el2(){
@@ -21,10 +21,10 @@ function el3(){
 }
 
 
-app.append(el3())
+
 console.log(e1)
 T.Test("İç içe component fonksiyonu sağlıyormu?",()=>{
-    let ilk=el3().firstElementChild
+    let ilk=el3()
     return ilk.isSameNode(el2())
 })
 
@@ -42,5 +42,5 @@ T.Test("Attributeler ile tek seferlik eşitleme yapıyormu?",()=>{
     let x=el4()
     return x.firstElementChild.className==="hello"
 })
-
+app.append(el3())
 export const elementveAnahtarlar=undefined

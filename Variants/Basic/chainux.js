@@ -1,9 +1,10 @@
+(()=>{
 const key="#!CHNX!#"
 const eKey="<chnx></chnx>"
 
 function HTML(string) {return document.createRange().createContextualFragment(string)}
 
-export function html(e,...ar){
+function html(e,...ar){
     let str=""
     let args=[...ar]
     e.forEach((a,i)=>{str+=a;args[i]?str+=key:""})    
@@ -50,3 +51,5 @@ export function html(e,...ar){
     }
     return element
 }
+window.html=html
+})()
