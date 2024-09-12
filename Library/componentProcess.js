@@ -20,6 +20,8 @@ export function componentMixin() {
         get(key) {
             if(map.has(key)){
                 return map.get(key);
+            }else{
+                console.warn("Component<"+key+"> is not defined!")
             }
         },
         set(key, value) {
@@ -77,7 +79,6 @@ export async function componentProcess(target,func){
     if(compiled instanceof HTMLElement){
         //doğru yol
         //slot parçalama işi burada yapılacaktır
-        /*if(current instanceof HTMLElement&&current.tagName=="SLOT"){}*/
         let slotQ=compiled.querySelector("slot")
         let slotNQA=compiled.querySelectorAll("[slot]")
         if(this.slot.childNodes.length&&slotQ){
@@ -86,17 +87,17 @@ export async function componentProcess(target,func){
         if(slotNQA.length){
             slotNQA.forEach(n=>{
                 let sName=n.getAttribute("slot")
-
+                n.removeAttribute("slot")
+                if(this.slots.hasOwnProperty(sName)){
+                    n.appendChild(this.slots[sName])
+                }
             })
         }
-
-
         ///END
         temp.replaceWith(compiled)
     }else{
         console.error("Function output must be a element!")
     }
-
 }
 
             /*
