@@ -29,7 +29,7 @@ let html = (() => {
     function html(e, ...ar) {
         let str = ""
         let args = [...ar]
-        e.forEach((a, i) => { str += a; args[i] ? str += key : "" })
+        e.forEach((a,i)=>{str+=a;args.length!==i?str+=key:""})
         let fragment = HTML(str)
         let element = fragment.firstElementChild
         let a = () => [element, ...element.querySelectorAll("*")]

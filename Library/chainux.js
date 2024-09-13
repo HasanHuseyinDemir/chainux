@@ -164,7 +164,7 @@ function wF(_){
 function html(e,...ar){
     let str=""
     let args=[...ar]
-    e.forEach((a,i)=>{str+=a;args[i]?str+=key:""})
+    e.forEach((a,i)=>{str+=a;args.length!==i?str+=key:""})
     str=str.replaceAll("<>", "<div>").replaceAll("</>", "</div>");
     if(str.includes("/>")){str=nM(str)}
     let fragment = HTML(str)
@@ -199,7 +199,6 @@ function html(e,...ar){
                             let a = args.shift();
                             
                             if(a==undefined){
-                                console.log("UNDEFINED",attr.name)
                                 elm.removeAttribute(attr.name)
                                 return
                             }
@@ -219,7 +218,6 @@ function html(e,...ar){
                 if(elm.tagName==="CHNX"){
                     let t=args.shift()
                     if(t==undefined){
-                        console.log("Sİlindi")
                         elm.remove()
                         return
                     }
