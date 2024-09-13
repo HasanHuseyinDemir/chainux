@@ -1,9 +1,21 @@
+let {html,components,DebugMode}=(()=>{
 const key="#!CHNX!#"
-
-export const components = componentMixin();
+const components = componentMixin();
 function HTML(string) {return document.createRange().createContextualFragment(string)}
-
-const ctw = (e) => document.createTreeWalker(e, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT, null, !1)//Bütün Elementler
+//const ctw = (e) => document.createTreeWalker(e, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT, null, !1)//Bütün Elementler
+let isPrivate=1
+function DebMode(b/*<boolean>*/) {
+    // Debug option for developers
+    // not for "components" version
+    isPrivate=!b;
+    if (b) {
+        window.components=components;
+        window.html=html;
+    }
+    // Note: Future versions may include additional features and improvements
+    // such as enhanced debugging tools, configuration options, and extended
+    // component functionalities. Keep an eye on the release notes for updates.
+}
 
 //vanilla yöntem içindir
 function listAttributes(element) {
@@ -15,7 +27,6 @@ function listAttributes(element) {
     }
     return list;//{....}...
 }
-
 function processElement(element) {
     const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null, false);
     let node;
@@ -27,6 +38,27 @@ function processElement(element) {
     }
 }
 
+//<Component class="x" id="y"/> => <Component class="x" id="y"></Component>
+function nM(e) {
+    let s = e,
+        n = s.split("/>").length - 1,
+        r = 0;
+    for (; n > r;) {
+        let i = s.search("/>") - 1,
+            l = 0,
+            o = "";
+        for (; i - l >= -1;) {
+            if ("<" == s.charAt(i - l)) {
+                let a = (o = o.split("").reverse().join("")).split(" ")[0],
+                    c = `<${a} ${o.replace(a, "") || ""}></${a}>`;
+                (s = s.slice(0, i - l) + c + s.slice(i + 3, s.length)), r++, (i = ""), (l = 0), (o = "");
+            } else o += s.charAt(i - l);
+            l++;
+        }
+    }
+    return s;
+}
+
 function replaceKeyWithElement(textNode) {
     const range = document.createRange();
     let text = textNode.textContent;
@@ -35,16 +67,11 @@ function replaceKeyWithElement(textNode) {
     while (text.includes(key)) {
         const startIndex = text.indexOf(key, index);
         const endIndex = startIndex + key.length;
-
         range.setStart(textNode, startIndex);
         range.setEnd(textNode, endIndex);
-
         range.deleteContents();
-
         const newElement = document.createElement("chnx");
-        
         range.insertNode(newElement);
-
         text = textNode.textContent;
         index = startIndex + "<chnx></chnx>".length;
     }
@@ -74,19 +101,14 @@ function componentMixin() {
                 console.error("Component names should not contain spaces.");
                 return 
             }
-            map.set(key, value);
-            //vanilla tipi component eşleme callbacki yapılabilir
-
+            map.set(key.toLowerCase(), value);
             document.querySelectorAll(key).forEach(e=>{componentProcess.call({props:listAttributes(e),...collectSlots(e)},e)})//vanilla
-            //html fonksiyonunda farklı işleme tabi tutulacaktır
         },
         map
     };
 }
 
-let l=console.log
-
-export function collectSlots(e) {
+function collectSlots(e) {
     let slots = {};
     let frag=new DocumentFragment()
     let sNames=e.querySelectorAll("[slot]")
@@ -103,7 +125,7 @@ return { slot: frag, slots };
 }
 
 
-export function componentProcess(target){
+function componentProcess(target){
     let temp=document.createElement("div")
     //slotları documentFragmente aktarmak
     target.replaceWith(temp)
@@ -131,12 +153,20 @@ export function componentProcess(target){
     return compiled
 }
 //wrapped private function
-function wF(_){return function(...a){_(...a)}}
+function wF(_){
+    if(isPrivate){
+        return function(...a){_(...a)}
+    }else{
+        return _
+    }
+}
 
-export function html(e,...ar){
+function html(e,...ar){
     let str=""
     let args=[...ar]
-    e.forEach((a,i)=>{str+=a;args[i]?str+=key:""})    
+    e.forEach((a,i)=>{str+=a;args[i]?str+=key:""})
+    str=str.replaceAll("<>", "<div>").replaceAll("</>", "</div>");
+    if(str.includes("/>")){str=nM(str)}
     let fragment = HTML(str)
     let element=fragment.firstElementChild
     let subcomponents=[]
@@ -167,11 +197,18 @@ export function html(e,...ar){
                     for (let attr of elm.attributes) {
                         if (elm.getAttribute(attr.name) == key) {
                             let a = args.shift();
+                            
+                            if(a==undefined){
+                                console.log("UNDEFINED",attr.name)
+                                elm.removeAttribute(attr.name)
+                                return
+                            }
+
                             if (attr.name.startsWith("on")) {
                                 if (typeof a === "function") {
                                     elm.addEventListener(attr.name.slice(2), wF(a));
-                                    elm.removeAttribute(attr.name)
                                 }
+                                elm.removeAttribute(attr.name)
                             } else {
                                 elm.setAttribute(attr.name, a);
                             }
@@ -181,6 +218,11 @@ export function html(e,...ar){
                 
                 if(elm.tagName==="CHNX"){
                     let t=args.shift()
+                    if(t==undefined){
+                        console.log("Sİlindi")
+                        elm.remove()
+                        return
+                    }
                     if(!(t instanceof Object)){//immutable
                         elm.replaceWith(document.createTextNode(t))
                         return 
@@ -189,6 +231,9 @@ export function html(e,...ar){
                         t=t()
                         if(t instanceof Node){
                             elm.replaceWith(t)
+                        }
+                        if(!(t instanceof Object)){
+                            elm.replaceWith(new Text(t))
                         }
                         return 
                     }
@@ -209,3 +254,6 @@ export function html(e,...ar){
     });
     return element
 }
+return {html,components,DebugMode:DebMode}
+})()
+export {html,components,DebugMode}

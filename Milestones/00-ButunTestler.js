@@ -42,15 +42,31 @@ function TestComponent1() {
     </div>`;
 }
 
+function Component2(){
+    let c=this.props.click
+    return html`
+    <div>
+    ${undefined}
+        <h1 onclick=${this.props.click}>Hello ${"Hello"} ${2} ${1}</h1>
+    </div>`
+}
+components.set("component2",Component2)
+
 // TestComponent2 - İçerik sağlar ve slotları kullanır
 function TestComponent2() {
     return html`
-    
-     <Component class="as" temp=${"a"} obj=${{ x: 1 }}>
-            Merhaba Dünya!
-            <button onclick=${()=>alert("Hello")}>Selam</button>
-            <p slot="selamlar">Selamlar, bu P elementi bir slot kullanıyor!</p>
+    <div>
+    <Component2 click=${()=>{console.log("bu bir")}} name="Hasan"/>
+    <Component2 click=${()=>{console.log("bu iki")}} name="Zeynep"/>
+    <Component2/>
+
+    <Component class="as" temp=${"a"} obj=${{ x: 1 }}>
+        Merhaba Dünya!
+        <button onclick=${()=>alert("Hello")}>Selam</button>
+        <p slot="selamlar">Selamlar, bu P elementi bir slot kullanıyor!</p>
     </Component>
+    </div>
+
     
     `;
 }

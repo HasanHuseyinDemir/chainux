@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chainux-Basic ColorPalette Example</title>
+    <script src="../Variants/Basic/chainux.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color:black;
+            color:white
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        .palette {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 12px;
+            background-color: #111;
+            justify-content: center;
+            max-height: 300px;
+            overflow-x: scroll;
+        }
+
+        .color-box {
+            width: 100px;
+            height: 100px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #002e5e;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition:ease-in-out .2s;
+        }
+
+        button:hover {
+            background-color: #016adb;
+        }
+
+        .center {
+            display: flex;
+            justify-content: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app"></div>
+    <script>
+
+        function colorPaletteComponent() {
+            const palette = html`<div class="palette"></div>`;
+            const button = html`<button onclick=${addColor}>Add Random Color</button>`;
+
+            function getRandomColor() {//HEXGENERATOR
+                const letters = '0123456789ABCDEF';
+                let color = '#';
+                for (let i = 0; i < 6; i++) {
+                    color += letters[Math.floor(Math.random() * 16)];
+                }
+                return color;
+            }
+
+            function countNodeGenerator() {//count textNodeGenerator
+                let count = 0
+                let countNode = new Text(count)//TEXTNODE
+                return {
+                    update() {
+                        countNode.nodeValue = count
+                    },
+                    increase() {
+                        count++
+                        this.update()
+                    },
+                    decrease() {
+                        count--
+                        this.update()
+                    },
+                    node: countNode
+                }
+            }
+            let countNode = countNodeGenerator()//textNode
+
+            function removeColor(e){
+                e.remove()
+                countNode.decrease()
+            }
+
+            function addColor() {
+                countNode.increase()
+                const colorBox = html`<div class="color-box" onclick=${()=>removeColor(colorBox)} style=${"transition: ease-in-out .2s;background-color:black;opacity:0;width:0"}></div>`;
+                setTimeout(()=>{
+                    colorBox.style.backgroundColor=getRandomColor()
+                    colorBox.style.opacity=1
+                    colorBox.style.width=null
+                },30)
+                palette.appendChild(colorBox);
+            }
+
+            function bottomComponent(){
+                return html`
+                <div class="bottom">
+                    ${()=>{                        
+                        //Alternative usage
+                        let element = document.createElement("div")
+                        element.className="container"
+                        let style={
+                            backgroundColor:"orange",
+                            padding:"12px",
+                            margin:"12px",
+                            color:"#111",
+                        }
+                        Object.assign(element.style,style)
+                        element.textContent="Thank you for using chainux-basic!"
+                        return element
+                    }}
+                </div>`
+            }
+
+            return html`
+                <div>
+                    <h1 class="center">Palette Color Generator - (${/*count view textNode*/countNode.node})</h1>
+                    <div class="center">${button}</div>
+                    <br>
+                    <div style="background-color:#222;padding:36px">
+                    ${palette}
+                    ${bottomComponent}
+                    </div>
+                </div>
+            `
+        }
+
+        // Initialize the Color Palette Component
+        document.querySelector("#app").appendChild(colorPaletteComponent());
+    </script>
+</body>
+
+</html>

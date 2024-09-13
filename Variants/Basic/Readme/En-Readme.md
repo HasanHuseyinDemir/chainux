@@ -3,6 +3,9 @@
 Chainux-Basic is a fast, easy-to-learn version of Chainux that is fully compatible with vanilla JavaScript. It includes basic elements and functions, enabling you to manage your web development process simply and efficiently.
 
 Chainux-Basic is an ideal choice for simple projects and fundamental applications, minimizing the learning curve and facilitating rapid prototyping and application development.
+
+Chainux-Basic combines multiple keys into one, making it suitable for handling large HTML files. This approach simplifies content and event management in complex and large HTML structures.
+
 ## Examples
 ### Single HTML Element
 
@@ -18,7 +21,11 @@ This example creates a button HTML element. When the button is clicked, it displ
 
 ```javascript
 function wrap1() {
-    return html`<div>${element}</div>`;
+    return html`
+    <div>
+        <h1>Hello World!</h1>
+        <div>${element}</div>
+    </div>`;
 }
 ```
 
