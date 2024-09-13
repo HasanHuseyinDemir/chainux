@@ -1,7 +1,7 @@
 //import { elementOlusturma } from "./01-ElementOlusturma.js";
 //import { elementveAnahtarlar } from "./02-Element&Anahtarlar.js";
 
-import { html } from "../Library/chainux.js";
+import { html,components } from "../Library/chainux.js";
 /*
 let count=0
 let node=new Text(count)
@@ -28,4 +28,35 @@ function wrap3(){
 }
 
 document.querySelector("#app").appendChild(wrap3())*/
+
+//sade bir çağırım
+//Slotları alır ve gösterir
+function TestComponent1() {
+    return html`
+    <div>
+        <p>Slot içeriği (default slot):</p>
+        <h1><slot></slot></h1>
+        
+        <p>Slot içeriği (isimli slot):</p>
+        <div><slot name="selamlar"></slot></div>
+    </div>`;
+}
+
+// TestComponent2 - İçerik sağlar ve slotları kullanır
+function TestComponent2() {
+    return html`
+    
+     <Component class="as" temp=${"a"} obj=${{ x: 1 }}>
+            Merhaba Dünya!
+            <button onclick=${()=>alert("Hello")}>Selam</button>
+            <p slot="selamlar">Selamlar, bu P elementi bir slot kullanıyor!</p>
+    </Component>
+    
+    `;
+}
+
+
+components.set("component",TestComponent1)
+
+document.querySelector("#app").appendChild(TestComponent2())
 
