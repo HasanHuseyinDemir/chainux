@@ -31,7 +31,7 @@ document.querySelector("#app").appendChild(wrap3())*/
 
 //sade bir çağırım
 //Slotları alır ve gösterir
-function TestComponent1() {
+/*function TestComponent1() {
     return html`
     <div>
         <p>Slot içeriği (default slot):</p>
@@ -40,38 +40,67 @@ function TestComponent1() {
         <p>Slot içeriği (isimli slot):</p>
         <div><slot name="selamlar"></slot></div>
     </div>`;
-}
+}*/
+//components.set("component",TestComponent1)
 
 function Component2(){
-    let c=this.props.click
+    let name=this.props.name
+    let count=0
+    function remove(a){
+        //arg.parent is components first element
+        alert("Goodbye! "+name)
+        a.parent.remove()
+    }
+    function increase(){
+        count++
+        //this : current element
+        console.log(name,count)
+        this.querySelector("span").textContent=count
+    }
+
     return html`
-    <div>
-        <h1 onclick=${this.props.click}>Hello ${this.props.name||"USER!"} ${2} ${1}</h1>
+    <div style="background-color:#555;color:white;padding:12px;margin:12px;" id=${"parent-of-"+name.toLowerCase()}>
+        <h2 
+            title="click here to delete root element" 
+            onclick=${remove}>
+                Hello ${this.props.name}!
+        </h2>
+        <button 
+            title="onclick = increase count" 
+            onclick=${increase}>
+                Count : <span>${count}</span>
+        </button>
     </div>`
 }
 components.set("component2",Component2)
 
 // TestComponent2 - İçerik sağlar ve slotları kullanır
 function TestComponent2() {
+    let index=0
+    let array=["Chainux","User","Developer","Everyone","Brother","Javascript","Mars","World"]
+
+    function addComponent(argument){
+        let template=html`<Component2 name=${array[index%array.length]+" - "+index}></Component2>`
+        argument.parent.querySelector("#container").appendChild(template)
+        index++
+    }
+
+
     return html`
     <div>
-    <Component2 click=${()=>{console.log("bu bir")}} name="BCA"/>
-    <Component2 click=${()=>{console.log("bu iki")}} name="ABC"/>
-    <Component2/>
-
-    <Component class="as" temp=${"a"} obj=${{ x: 1 }}>
-        Merhaba Dünya!
-        <button onclick=${()=>alert("Hello")}>Selam</button>
-        <p slot="selamlar">Selamlar, bu P elementi bir slot kullanıyor!</p>
-    </Component>
+        <h1>Component Test</h1>
+        <div>
+            <button onclick=${addComponent}>AddComponent</button>
+        </div>
+        <hr>
+        <h2>Container</h2>
+        <div id="container"></div>
     </div>
-
-    
     `;
 }
 
 
-components.set("component",TestComponent1)
+
 
 document.querySelector("#app").appendChild(TestComponent2())
 

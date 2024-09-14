@@ -141,14 +141,6 @@ function componentProcess(target){
     }
     return compiled
 }
-//wrapped private function
-function wF(_){
-    if(isPrivate){
-        return function(...a){_(...a)}
-    }else{
-        return _
-    }
-}
 
 function html(e,...ar){
     let str=""
@@ -194,7 +186,7 @@ function html(e,...ar){
 
                             if (attr.name.startsWith("on")) {
                                 if (typeof a === "function") {
-                                    elm.addEventListener(attr.name.slice(2), wF(a));
+                                    elm.addEventListener(attr.name.slice(2), ()=>a.call(elm,{parent:element}));
                                 }
                                 elm.removeAttribute(attr.name)
                             } else {
@@ -234,7 +226,7 @@ function html(e,...ar){
         qsA().forEach(process)
     //}
     subcomponents.forEach(x => {
-        let c = componentProcess.call({props: x.values,...collectSlots(x.target)},x.target);
+        let c = componentProcess.call({props: x.values,...collectSlots(x.target),parent:element},x.target);
         if (x.target === element) {
             element=c
         }
