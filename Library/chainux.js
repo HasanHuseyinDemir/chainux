@@ -17,16 +17,6 @@ function DebMode(b/*<boolean>*/) {
     // component functionalities. Keep an eye on the release notes for updates.
 }
 
-//vanilla yöntem içindir
-function listAttributes(element) {
-    const attributes = element.attributes;
-    const list = {};
-    for (let i = 0; i < attributes.length; i++) {
-        const attr = attributes[i];
-        list[attr.name]=attr.value
-    }
-    return list;//{....}...
-}
 function processElement(element) {
     const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null, false);
     let node;
@@ -39,6 +29,7 @@ function processElement(element) {
 }
 
 //<Component class="x" id="y"/> => <Component class="x" id="y"></Component>
+//https://gist.github.com/HasanHuseyinDemir/ba781df027f4271ff9aa9b2e978a0afd
 function nM(e) {
     let s = e,
         n = s.split("/>").length - 1,
@@ -62,7 +53,6 @@ function nM(e) {
 function replaceKeyWithElement(textNode) {
     const range = document.createRange();
     let text = textNode.textContent;
-    
     let index = 0;
     while (text.includes(key)) {
         const startIndex = text.indexOf(key, index);
@@ -102,7 +92,6 @@ function componentMixin() {
                 return 
             }
             map.set(key.toLowerCase(), value);
-            document.querySelectorAll(key).forEach(e=>{componentProcess.call({props:listAttributes(e),...collectSlots(e)},e)})//vanilla
         },
         map
     };
