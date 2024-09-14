@@ -46,8 +46,7 @@ function Component2(){
     let c=this.props.click
     return html`
     <div>
-    ${undefined}
-        <h1 onclick=${this.props.click}>Hello ${"Hello"} ${2} ${1}</h1>
+        <h1 onclick=${this.props.click}>Hello ${this.props.name||"USER!"} ${2} ${1}</h1>
     </div>`
 }
 components.set("component2",Component2)
@@ -56,8 +55,8 @@ components.set("component2",Component2)
 function TestComponent2() {
     return html`
     <div>
-    <Component2 click=${()=>{console.log("bu bir")}} name="Hasan"/>
-    <Component2 click=${()=>{console.log("bu iki")}} name="Zeynep"/>
+    <Component2 click=${()=>{console.log("bu bir")}} name="BCA"/>
+    <Component2 click=${()=>{console.log("bu iki")}} name="ABC"/>
     <Component2/>
 
     <Component class="as" temp=${"a"} obj=${{ x: 1 }}>
