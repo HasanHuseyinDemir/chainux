@@ -1,4 +1,4 @@
-let {html,components,DebugMode}=(()=>{
+const {html,components,DebugMode}=(()=>{
 const key="#!CHNX!#"
 const components = componentMixin();
 function HTML(string) {return document.createRange().createContextualFragment(string)}
