@@ -1,7 +1,9 @@
 //import { elementOlusturma } from "./01-ElementOlusturma.js";
 //import { elementveAnahtarlar } from "./02-Element&Anahtarlar.js";
 
-import { html,components } from "../Library/chainux.js";
+//import { html,components } from "../Library/chainux.js";
+import {html,components} from "../Versions/Chainux-Components/chainux.min.mjs"
+
 /*
 let count=0
 let node=new Text(count)
