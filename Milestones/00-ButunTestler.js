@@ -85,12 +85,18 @@ function TestComponent2() {
         index++
     }
 
+    function set(){
+        this.textContent="Çalışıyor!"
+        console.log(this)
+    }
+
 
     return html`
     <div>
         <h1>Component Test</h1>
         <div>
             <button onclick=${addComponent}>AddComponent</button>
+            <p use=${set}></p>
         </div>
         <hr>
         <h2>Container</h2>

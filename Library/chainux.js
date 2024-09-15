@@ -183,7 +183,11 @@ function html(e,...ar){
                                 elm.removeAttribute(attr.name)
                                 return
                             }
-
+                            if(attr.name=="use"){
+                                elm.removeAttribute("use")
+                                a.call(elm,{parent:element})
+                                return 
+                            }
                             if (attr.name.startsWith("on")) {
                                 if (typeof a === "function") {
                                     elm.addEventListener(attr.name.slice(2), ()=>a.call(elm,{parent:element}));
