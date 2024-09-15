@@ -88,7 +88,7 @@ function TestComponent2() {
     }
 
     function set(){
-        this.textContent="Çalışıyor!"
+        this.textContent="Its Working!"
         console.log(this)
     }
 
