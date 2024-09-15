@@ -134,12 +134,14 @@
 
             function useMethod(a){
 
-                //argument.parent is first element of component
+                //argument.parent is rootElement of component 
                 //this.parentElement is parent element of element 
 
                 this.textContent="Hello!"
+                this.addEventListener("mouseenter",function(){this.textContent="World!"})
+                this.addEventListener("mouseleave",function(){this.textContent="Hello"})
                 this.parentElement.style="display:flex;justify-content:center"//div#centered-text
-                console.log(a.parent.className)//app-container
+                console.log(a.parent.className)//div.app-container
             }
 
             return html`
