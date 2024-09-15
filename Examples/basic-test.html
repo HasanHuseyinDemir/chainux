@@ -14,8 +14,8 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color:black;
-            color:white
+            background-color: black;
+            color: white
         }
 
         .container {
@@ -49,7 +49,7 @@
             border-radius: 4px;
             cursor: pointer;
             margin-top: 20px;
-            transition:ease-in-out .2s;
+            transition: ease-in-out .2s;
         }
 
         button:hover {
@@ -100,39 +100,33 @@
             }
             let countNode = countNodeGenerator()//textNode
 
-            function removeColor(e){
+            function removeColor(e) {
                 e.remove()
                 countNode.decrease()
             }
 
             function addColor() {
                 countNode.increase()
-                const colorBox = html`<div class="color-box" onclick=${()=>removeColor(colorBox)} style=${"transition: ease-in-out .2s;background-color:black;opacity:0;width:0"}></div>`;
-                setTimeout(()=>{
-                    colorBox.style.backgroundColor=getRandomColor()
-                    colorBox.style.opacity=1
-                    colorBox.style.width=null
-                },30)
+                const colorBox = html`<div class="color-box" onclick=${() => removeColor(colorBox)} style=${"transition: ease-in-out .2s ;background-color:black;opacity:0;width:1px"}></div>`;
+                colorBox.style.backgroundColor = getRandomColor()
                 palette.appendChild(colorBox);
             }
 
-            function bottomComponent(){
+            function bottomComponent() {
+                //Alternative usage
+                let element = document.createElement("div")
+                element.className = "container"
+                let style = {
+                    backgroundColor: "orange",
+                    padding: "12px",
+                    margin: "12px",
+                    color: "#111",
+                }
+                Object.assign(element.style, style)
+                element.textContent = "Thank you for using chainux-basic!"
                 return html`
                 <div class="bottom">
-                    ${()=>{                        
-                        //Alternative usage
-                        let element = document.createElement("div")
-                        element.className="container"
-                        let style={
-                            backgroundColor:"orange",
-                            padding:"12px",
-                            margin:"12px",
-                            color:"#111",
-                        }
-                        Object.assign(element.style,style)
-                        element.textContent="Thank you for using chainux-basic!"
-                        return element
-                    }}
+                    ${element}
                 </div>`
             }
 
