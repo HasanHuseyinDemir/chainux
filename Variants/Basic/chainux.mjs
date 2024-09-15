@@ -46,7 +46,7 @@ let html = (() => {
                             let a = args.shift();
                             if (attr.name.startsWith("on")) {
                                 if (typeof a === "function") {
-                                    elm.addEventListener(attr.name.slice(2), a);
+                                    elm.addEventListener(attr.name.slice(2), ()=>a.call(elm,{parent:element}));
                                     elm.removeAttribute(attr.name)
                                 }
                             } else {
