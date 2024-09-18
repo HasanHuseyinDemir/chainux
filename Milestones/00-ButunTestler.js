@@ -2,7 +2,7 @@
 //import { elementveAnahtarlar } from "./02-Element&Anahtarlar.js";
 
 //import { html,components } from "../Library/chainux.js";
-import {html,components} from "../Versions/Chainux-Components/chainux.min.mjs"
+import {html,components,onConnect,onRemove,Data,getData, Render} from "../Library/chainux.js"
 
 /*
 let count=0
@@ -44,13 +44,24 @@ document.querySelector("#app").appendChild(wrap3())*/
     </div>`;
 }*/
 //components.set("component",TestComponent1)
+/*
+function c(){
+    let i=0
+    function increase(){
+        this.textContent=++i
+    }
+
+    onConnect(increase)
+    return html`<div>Hello World!</div>`
+}
+
+let component=Render(c)
 
 function Component2(){
     let name=this.props.name
     let count=0
     function remove(a){
         //arg.parent is components first element
-        alert("Goodbye! "+name)
         a.parent.remove()
     }
     function increase(){
@@ -60,6 +71,11 @@ function Component2(){
         this.querySelector("span").textContent=count
     }
 
+    onRemove((e)=>{
+        console.log(e.innerHTML)
+        console.log("Count :"+count)
+    })
+
     return html`
     <div style="background-color:#555;color:white;padding:12px;margin:12px;" id=${"parent-of-"+name.toLowerCase()}>
         <h2 
@@ -67,6 +83,7 @@ function Component2(){
             onclick=${remove}>
                 Hello ${this.props.name}!
         </h2>
+       ${component}
         <button 
             title="onclick = increase count" 
             onclick=${increase}>
@@ -89,15 +106,14 @@ function TestComponent2() {
 
     function set(){
         this.textContent="Its Working!"
-        console.log(this)
     }
 
 
     return html`
     <div>
-        <h1>Component Test</h1>
+        <h1>Component Test  </h1>
         <div>
-            <button onclick=${addComponent}>AddComponent</button>
+        <button onclick=${addComponent}>AddComponent</button>
             <p use=${set}></p>
         </div>
         <hr>
@@ -105,10 +121,34 @@ function TestComponent2() {
         <div id="container"></div>
     </div>
     `;
+}*/
+
+function getter(){
+    let data=this.data
+    function increase(){
+        data.x++
+    }
+
+    return html`<button onclick=${increase}>Increase ${data.node}</button>`
 }
 
+function dataized(){
+    let x=0
+    Data({
+        node: document.createTextNode(x), // Text objesi oluşturuluyor
+        get x() {
+            return x;
+        },
+        set x(a) {
+            if (a != x) {
+                x = a;
+                this.node.nodeValue = x;
+            }
+        }
+    })
 
+    return html`<div onclick=${async function(){(await import("./d.js")).default.call(this)}}>Merhaba ${getter}</div>`
+}
 
-
-document.querySelector("#app").appendChild(TestComponent2())
+document.querySelector("#app").appendChild(Render(dataized))
 
