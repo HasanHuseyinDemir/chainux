@@ -265,12 +265,12 @@ function html(e,...ar){
                             }
                             if(attr.name=="use"){
                                 elm.removeAttribute("use")
-                                a.call(elm,{parent:element})
+                                a.call(elm,{parent:element,data})
                                 return 
                             }
                             if (attr.name.startsWith("on")) {
                                 if (typeof a === "function") {
-                                    elm.addEventListener(attr.name.slice(2), ()=>a.call(elm,{parent:element}));
+                                    elm.addEventListener(attr.name.slice(2), ()=>a.call(elm,{parent:element,data}));
                                 }
                                 elm.removeAttribute(attr.name)
                             } else {
