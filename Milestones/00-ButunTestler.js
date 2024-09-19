@@ -2,7 +2,7 @@
 //import { elementveAnahtarlar } from "./02-Element&Anahtarlar.js";
 
 //import { html,components } from "../Library/chainux.js";
-import {html,components,onConnect,onRemove,Data,getData, Render} from "../Library/chainux.js"
+import {html,components,onConnect,onRemove,Data, Render} from "../Library/chainux.js"
 
 /*
 let count=0
@@ -122,6 +122,8 @@ function TestComponent2() {
     </div>
     `;
 }*/
+
+window.Data=Data
 
 function getter(){
     let data=this.data

@@ -1,12 +1,12 @@
-export const {html,components,DebugMode,onConnect,onRemove,Render,Data,getData}=(()=>{
+export const {html,components,DebugMode,onConnect,onRemove,Render,Data}=(()=>{
 const key="#!CHNX!#"
 const components = componentMixin();
 /*Interact*/
 //lifecycle hooks
 const ind={
-    index:0,
-    createIndex(){
-        return this.index++
+    i:0,
+    ex(){
+        return this.i++
     }
 }
 
@@ -22,13 +22,12 @@ const hooks={
 function Data(d) {
     return hooks.temp.data=d
 }
-
-function hasData(e){
+Data.hasData=function(e){
     return hooks.elementDataPair.has(e)
 }
 
-function getData(e){
-    if(hasData(e)){return hooks.elementDataPair.get(e)}
+Data.getData=function(e){
+    if(Data.hasData(e)){return hooks.elementDataPair.get(e)}
 }
 /*WIP Lazy Component Loading is best for optimizations
 function lazyComponent(e){
@@ -317,5 +316,5 @@ function html(e,...ar){
     });
     return element
 }
-return {html,components,DebugMode:DebMode,onConnect,onRemove,Render,Data,getData}
+return {html,components,DebugMode:DebMode,onConnect,onRemove,Render,Data}
 })()
