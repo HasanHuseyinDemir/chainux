@@ -44,7 +44,7 @@ document.querySelector("#app").appendChild(wrap3())*/
     </div>`;
 }*/
 //components.set("component",TestComponent1)
-/*
+
 function c(){
     let i=0
     function increase(){
@@ -121,10 +121,12 @@ function TestComponent2() {
         <div id="container"></div>
     </div>
     `;
-}*/
+}
+
+document.querySelector("#app").append(TestComponent2())
 
 window.Data=Data
-
+/*
 function getter(){
     let data=this.data
     function increase(){
@@ -153,4 +155,4 @@ function dataized(){
 }
 
 document.querySelector("#app").appendChild(Render(dataized))
-
+*/

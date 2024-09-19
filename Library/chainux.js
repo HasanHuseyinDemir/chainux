@@ -230,15 +230,17 @@ function html(e,...ar){
     let fragment = HTML(str)
     let element=fragment.firstElementChild
     let subcomponents=[]
+    let fC=false//is first element component?
     let qsA=()=>[element,...element.querySelectorAll("*")]
         qsA().forEach((elm,i)=>{
             if (elm.textContent.includes(key)) {
                 processElement(elm)
             }
         })
-        function process(elm){
+        function process(elm,i){
             if(components.map.has(elm.tagName.toLowerCase())){
                 let values={}
+                if(i==0){fC=true}
                 if(elm.hasAttributes()){
                     for (let attr of elm.attributes) {
                         if (elm.getAttribute(attr.name) == key) {
@@ -310,9 +312,7 @@ function html(e,...ar){
     //}
     subcomponents.forEach(x => {
         let c = componentProcess.call({props: x.values,...collectSlots(x.target),parent:element,data},x.target);
-        if (x.target === element) {
-            element=c
-        }
+        if (fC) {element=c}
     });
     return element
 }
