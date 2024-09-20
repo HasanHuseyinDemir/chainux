@@ -1,21 +1,7 @@
-const {html,components,DebugMode}=(()=>{
+const {html,components}=(()=>{
 const key="#!CHNX!#"
 const components = componentMixin();
 function HTML(string) {return document.createRange().createContextualFragment(string)}
-//const ctw = (e) => document.createTreeWalker(e, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT, null, !1)//Bütün Elementler
-let isPrivate=1
-function DebMode(b/*<boolean>*/) {
-    // Debug option for developers
-    // not for "components" version
-    isPrivate=!b;
-    if (b) {
-        window.components=components;
-        window.html=html;
-    }
-    // Note: Future versions may include additional features and improvements
-    // such as enhanced debugging tools, configuration options, and extended
-    // component functionalities. Keep an eye on the release notes for updates.
-}
 
 function processElement(element) {
     const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null, false);
@@ -161,7 +147,7 @@ function html(e,...ar){
             if(components.map.has(elm.tagName.toLowerCase())){
                 let values={}
                 if(elm.hasAttributes()){
-                    for (let attr of elm.attributes) {
+                    for (let attr of Array.from(elm.attributes)) {
                         if (elm.getAttribute(attr.name) == key) {
                             let a=args.shift()
                             values[attr.name]=a
@@ -175,18 +161,18 @@ function html(e,...ar){
             }
             if(args.length){
                 if (elm.hasAttributes()) {
-                    for (let attr of elm.attributes) {
+                    for (let attr of Array.from(elm.attributes)) {
                         if (elm.getAttribute(attr.name) == key) {
                             let a = args.shift();
                             
                             if(a==undefined){
                                 elm.removeAttribute(attr.name)
-                                return
+                                continue
                             }
                             if(attr.name=="use"){
                                 elm.removeAttribute("use")
                                 a.call(elm,{parent:element})
-                                return 
+                                continue
                             }
                             if (attr.name.startsWith("on")) {
                                 if (typeof a === "function") {
@@ -237,6 +223,6 @@ function html(e,...ar){
     });
     return element
 }
-return {html,components,DebugMode:DebMode}
+return {html,components}
 })()
-export {html,components,DebugMode}
+export {html,components}

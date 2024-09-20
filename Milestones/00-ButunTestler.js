@@ -71,11 +71,6 @@ function Component2(){
         this.querySelector("span").textContent=count
     }
 
-    onRemove((e)=>{
-        console.log(e.innerHTML)
-        console.log("Count :"+count)
-    })
-
     return html`
     <div style="background-color:#555;color:white;padding:12px;margin:12px;" id=${"parent-of-"+name.toLowerCase()}>
         <h2 
@@ -105,14 +100,20 @@ function TestComponent2() {
     }
 
     function set(){
-        this.textContent="Its Working!"
+        this.set(setter)
     }
 
+    let setter={
+        id:"Hello",
+        class:"test",
+        onclick:()=>console.log("WORKS!"),
+        textContent:"Çalışıyor"
+    }
 
     return html`
     <div>
+        <p set=${setter}></p>
         <h1>Component Test  </h1>
-        <div>
         <button onclick=${addComponent}>AddComponent</button>
             <p use=${set}></p>
         </div>
@@ -125,7 +126,6 @@ function TestComponent2() {
 
 document.querySelector("#app").append(TestComponent2())
 
-window.Data=Data
 /*
 function getter(){
     let data=this.data

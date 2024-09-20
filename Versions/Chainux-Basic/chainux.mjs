@@ -27,7 +27,7 @@ let html = (() => {
         }
     }
     function html(e, ...ar) {
-        let str = ""
+        let str
         let args = [...ar]
         e.forEach((a,i)=>{str+=a;args.length!==i?str+=key:""})
         let fragment = HTML(str)
@@ -41,13 +41,13 @@ let html = (() => {
             })
             function process(elm) {
                 if (elm.hasAttributes()) {
-                    for (let attr of elm.attributes) {
+                    for (let attr of Array.from(elm.attributes)) {
                         if (elm.getAttribute(attr.name) == key) {
                             let a = args.shift();
                             if(attr.name=="use"){
                                 elm.removeAttribute("use")
                                 a.call(elm,{parent:element})
-                                return 
+                                continue
                             }
                             if (attr.name.startsWith("on")) {
                                 if (typeof a === "function") {

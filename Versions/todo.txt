@@ -1,0 +1,2 @@
+bütün versiyonları Elm.attributes Array from ile çağırılacaktır
+return yerine continue kullanılacaktır

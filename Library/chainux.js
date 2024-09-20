@@ -1,19 +1,106 @@
-export const {html,components,DebugMode,onConnect,onRemove,Render,Data}=(()=>{
+export const {html,components,onConnect,onRemove,Render,Data,IStore}=(()=>{
 const key="#!CHNX!#"
 const components = componentMixin();
 /*Interact*/
 //lifecycle hooks
-const ind={
-    i:0,
-    ex(){
-        return this.i++
+//html.plain
+HTMLElement.prototype.clear=function(){this.textContent="";return this}
+HTMLElement.prototype.hide=function(a){this.style.display=a?"none":this.style.display;return this};
+HTMLElement.prototype.show=function(a){this.style.display=a?"block":this.style.display;return this};
+Object.defineProperty(HTMLElement.prototype,"text",{
+    set:function(v){this.textContent=v},
+    get:function(){return this.textContent},
+});
+HTMLElement.prototype.addClass=function(c){this.classList.add(c);return this}
+HTMLElement.prototype.removeClass=function(c){this.classList.remove(c);return this}
+HTMLElement.prototype.toggleClass=function(c){this.classList.toggle(c);return this}
+HTMLElement.prototype.setStyle = function(styles) {
+    for (let key in styles) {
+        let value=styles[key];
+        if (typeof value=="function") {
+            value=value.call(this);
+        }
+        if (this.style[key]!=value) {
+            this.style[key]=value;
+        }
     }
+    return this;
+};
+HTMLElement.prototype.set = function(p,arg){
+    if(p.style){
+        if(typeof p.style=="object"&&typeof p.style!="function"){
+            this.setStyle(p.style)
+        }else{
+            this.style=typeof p.style=="function"?p.style.call(this):p.style
+        }
+    }
+    for (let key in p) {
+        if(key!="callback"&&key!="style"){
+            if (key.startsWith("on")){
+                this[key]=p[key].bind(this)
+                continue
+            }
+            let value=p[key];
+            if(typeof value=="function") {
+                let result=value.call(this,arg);
+                if (this[key]!==result){
+                    this[key]=result;
+                }
+            } 
+            else if(key in this) {
+                if (this[key]!==value) {
+                    this[key]=value;
+                }
+            } 
+            else{
+                if(this.getAttribute(key)!==value) {
+                    this.setAttribute(key,value);
+                }
+            }
+        }
+    }
+    if(p.callback){
+        if(typeof p.callback=="function"){
+            p.callback.call(this)
+        }else{
+            console.warn("Set Callback Must Be a Function!")
+        }
+    }
+    return this
+};
+
+let index=0
+function IStore(obj,ca){//Interactive Store || NON REACTIVE
+    let c=ca//callback
+    let id=index++
+    if(!observer){
+        defineMObserver()
+    }
+    return new Proxy(obj,{
+        get(t,k){
+            return t[k]
+        },
+        set(t,k,v){
+            let before=t[k]
+            if(t[k]!=v){
+                t[k]=v
+                let call={before,current:v,key:k,id}
+                hooks.mountedISElements.forEach((val,key)=>{key.set(val,call)})//Update!
+                if(c){
+                    c.call(call)
+                }
+            }
+            return 1
+        }
+    })
 }
 
 const hooks={
     temp:{},
     elementHooksPair:new WeakMap(),
     elementDataPair:new WeakMap(),
+    elementISPair:new WeakMap(),//interactive state pair
+    mountedISElements:new Map(),//Ekle sil işlemleri mount unmount ile yapılır!
     eMSG:"Component onConnect & onRemove hooks must be a function!"
 }
 
@@ -25,7 +112,6 @@ function Data(d) {
 Data.hasData=function(e){
     return hooks.elementDataPair.has(e)
 }
-
 Data.getData=function(e){
     if(Data.hasData(e)){return hooks.elementDataPair.get(e)}
 }
@@ -41,10 +127,26 @@ function defineMObserver(){
         mutationsList.forEach(mutation=>{
             if (mutation.type == "childList") {
                 mutation.addedNodes.forEach((node) => {
-                    if (node instanceof HTMLElement) {[node,...node.querySelectorAll("*")].forEach(e=>callHook("connect",e))}
+                    if (node instanceof HTMLElement) {                        
+                        [node,...node.querySelectorAll("*")].forEach(e=>{
+                            if(hooks.elementISPair.has(e)){
+                                let data=hooks.elementISPair.get(e)
+                                hooks.mountedISElements.set(e,data)
+                                e.set(data)
+                            }
+                            callHook("connect",e)
+                        })
+                    }
                 });
                 mutation.removedNodes.forEach((node) => {
-                    if (node instanceof HTMLElement) {[node,...node.querySelectorAll("*")].forEach(e=>callHook("remove",e))}
+                    if (node instanceof HTMLElement) {
+                        [node,...node.querySelectorAll("*")].forEach(e=>{
+                            if(hooks.mountedISElements.has(e)){
+                                hooks.mountedISElements.delete(e)
+                            }
+                            callHook("remove",e)
+                        })
+                    }
                 });
             }
         });
@@ -81,20 +183,6 @@ function Render(f,call){
 
 /**/
 function HTML(string) {return document.createRange().createContextualFragment(string)}
-//const ctw = (e) => document.createTreeWalker(e, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT, null, !1)//Bütün Elementler
-let isPrivate=1
-function DebMode(b/*<boolean>*/) {
-    // Debug option for developers
-    // not for "components" version
-    isPrivate=!b;
-    if (b) {
-        window.components=components;
-        window.html=html;
-    }
-    // Note: Future versions may include additional features and improvements
-    // such as enhanced debugging tools, configuration options, and extended
-    // component functionalities. Keep an eye on the release notes for updates.
-}
 
 function processElement(element) {
     const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null, false);
@@ -221,7 +309,7 @@ function componentProcess(target){
 }
 
 function html(e,...ar){
-    let str=""
+    let str
     let data=hooks.temp.data
     let args=[...ar]
     e.forEach((a,i)=>{str+=a;args.length!==i?str+=key:""})
@@ -256,28 +344,56 @@ function html(e,...ar){
             }
             if(args.length){
                 if (elm.hasAttributes()) {
-                    for (let attr of elm.attributes) {
+                    let settable=!1
+                    let setter={}//
+                    for (let attr of Array.from(elm.attributes)) {
                         if (elm.getAttribute(attr.name) == key) {
                             let a = args.shift();
-                            
-                            if(a==undefined){
+                            if(a===undefined){
                                 elm.removeAttribute(attr.name)
-                                return
+                                continue
                             }
+
                             if(attr.name=="use"){
                                 elm.removeAttribute("use")
                                 a.call(elm,{parent:element,data})
-                                return 
+                                continue
                             }
-                            if (attr.name.startsWith("on")) {
-                                if (typeof a === "function") {
+                            
+                            if(attr.name.startsWith(":")){
+                                //interactive
+                                if(typeof a=="function"){
+                                    settable=true
+                                    setter[attr.name.slice(1)]=a.bind(elm)
+                                }else{
+                                    elm.set({[attr.name.slice(1)]:a})//
+                                }
+                                elm.removeAttribute(attr.name)
+                                continue 
+                            }
+                            
+                            if(attr.name=="set"){
+                                elm.set(a)
+                                elm.removeAttribute("set")
+                                continue
+                            }
+                            if(attr.name.startsWith("on")) {
+                                if (typeof a=="function") {
                                     elm.addEventListener(attr.name.slice(2), ()=>a.call(elm,{parent:element,data}));
                                 }
                                 elm.removeAttribute(attr.name)
-                            } else {
-                                elm.setAttribute(attr.name, a);
+                                continue
                             }
+                            if(typeof a=="function"){
+                                elm.setAttribute(attr.name,a.call(this))
+                                continue
+                            }
+                            elm.setAttribute(attr.name, a);
                         }
+                    }
+                    if(settable){
+                        hooks.elementISPair.set(elm,setter)
+                        //elm.set(setter) //mount edildiğinde çalışması yeterli
                     }
                 }
                 
@@ -316,5 +432,11 @@ function html(e,...ar){
     });
     return element
 }
-return {html,components,DebugMode:DebMode,onConnect,onRemove,Render,Data}
+
+html.plain=function(e){
+    return HTML(e)
+}
+HTMLElement.prototype.inner=function(e){this.clear();this.appendChild(e)}
+
+return {html,components,onConnect,onRemove,Render,Data,IStore}
 })()
