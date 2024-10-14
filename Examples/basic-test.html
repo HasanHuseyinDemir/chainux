@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chainux-Basic ColorPalette Example</title>
-    <script src="../Variants/Basic/chainux.min.js"></script>
+    <script src="../Versions/Chainux-Basic/chainux.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -39,6 +39,7 @@
             border: 1px solid #ddd;
             border-radius: 5px;
             cursor: pointer;
+            animation:fade in;
         }
 
         button {
@@ -107,7 +108,7 @@
 
             function addColor() {
                 countNode.increase()
-                const colorBox = html`<div class="color-box" onclick=${() => removeColor(colorBox)} style=${"transition: ease-in-out .2s ;background-color:black;opacity:0;width:1px"}></div>`;
+                const colorBox = html`<div class="color-box" onclick=${() => removeColor(colorBox)}></div>`;
                 colorBox.style.backgroundColor = getRandomColor()
                 palette.appendChild(colorBox);
             }

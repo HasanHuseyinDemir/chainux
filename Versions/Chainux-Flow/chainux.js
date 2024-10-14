@@ -5,8 +5,8 @@ const components = componentMixin();
 //lifecycle hooks
 //html.plain
 HTMLElement.prototype.clear=function(){this.textContent="";return this}
-HTMLElement.prototype.hide=function(a){this.style.display=a?"none":this.style.display;return this};
-HTMLElement.prototype.show=function(a){this.style.display=a?"block":this.style.display;return this};
+HTMLElement.prototype.hide=function(a){this.style.display==a?"none":this.style.display;return this};
+HTMLElement.prototype.show=function(a){this.style.display==a?"block":this.style.display;return this};
 Object.defineProperty(HTMLElement.prototype,"text",{
     set:function(v){this.textContent=v},
     get:function(){return this.textContent},
