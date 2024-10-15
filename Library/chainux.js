@@ -251,6 +251,7 @@ function html(e,...ar){
     let collection=[]//Bütün parçalanmış elementler
     let subcomponents=[]
     let fC=false//is first element component?
+    //ilk element component ise hooklar ona eklenir!
 
     let settings={
         eventListeners:new Map(),
