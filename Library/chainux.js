@@ -43,6 +43,7 @@ let $APPEND=Symbol()
 let $ACCESS=Symbol()
 let $SETHOOKS=Symbol()
 let $MEMO=Symbol()
+let $ID=Symbol()
 
 //COMPLETE
 new MutationObserver((M)=>{
@@ -66,16 +67,17 @@ function destroy(o){
         c.forEach(e=>e.remove())
         c.forEach(e=>e[$CLEANUP]?e[$CLEANUP]():"")
         c=null
-        return
+    }else if(typeof o=="object"){
+        for(let val in o){
+            let t=o[val]
+            if(t&&isObj(t)){destroy(t)}
+            else if(t instanceof Map){t.forEach((v,k)=>{destroy(v);t.delete(k);})}
+            else if(t instanceof Set){t.forEach(v=>{destroy(v)});t.clear()}
+            else if(Array.isArray(t)){t.forEach(v=>{destroy(v)})}
+            delete o[val]
+        }
     }
-    for(let val in o){
-        let t=o[val]
-        if(t&&isObj(t)){destroy(t)}
-        else if(t instanceof Map){t.forEach((v,k)=>{destroy(v);t.delete(k);})}
-        else if(t instanceof Set){t.forEach(v=>{destroy(v)});t.clear()}
-        else if(Array.isArray(t)){t.forEach(v=>{destroy(v)})}
-        delete o[val]
-    }
+
 }
 //COMPLETE
 function collect(e){
@@ -105,11 +107,24 @@ function Render(f,call){
     let g=global.renders
     g.push[{hooks:{},watchers:[]}]
     let o=f.call(call)//output
-    o.forEach(e=>{
-        if(e[$SETHOOKS]){
+    let t=false
+    collect(o).forEach(e=>{
+        if(!t&&e[$SETHOOKS]){
             e[$SETHOOKS]()
+            t=true
         }
     })
+
+    if(!t){
+        console.error("Render Error! :\nCHNUX Element not detected!")
+        g.pop()
+    }else{
+        collect(o).forEach(e=>{
+            if(e[$SETHOOKS]){
+                delete e[$SETHOOKS]
+            }
+        })
+    }
 
     return o
 }
@@ -220,7 +235,9 @@ function componentProcess(target){
     return compiled
 }
 
+let elementID=0
 function html(e,...ar){
+    let id=++elementID
     let str
     let args=[...ar]
     e.forEach((a,i)=>{str+=a;args.length!==i?str+=key:""})
@@ -230,6 +247,13 @@ function html(e,...ar){
     let element=HTML(str).firstElementChild
     let subcomponents=[]
     let fC=false//is first element component?
+
+    let settings={
+        eventListeners:new Map(),
+        activeWatchers:new Set(),
+        stateFunctions:new Set(),
+    }
+
     let qsA=()=>[element,...element.querySelectorAll("*")]
         qsA().forEach((elm)=>{
             if (elm.textContent.includes(key)) {
@@ -255,8 +279,6 @@ function html(e,...ar){
             }
             if(args.length){
                 if (elm.hasAttributes()) {
-                    let settable=!1
-                    let setter={}//
                     for (let attr of Array.from(elm.attributes)) {
                         if (elm.getAttribute(attr.name) == key) {
                             let a = args.shift();
@@ -267,14 +289,13 @@ function html(e,...ar){
 
                             if(attr.name=="use"){
                                 elm.removeAttribute("use")
-                                a.call(elm,{parent:element,data})
+                                a.call(elm,{parent:element})
                                 continue
                             }
                             
                             if(attr.name.startsWith(":")){
                                 //interactive
                                 if(typeof a=="function"){
-                                    settable=true
                                     setter[attr.name.slice(1)]=a.bind(elm)
                                 }else{
                                     elm.set({[attr.name.slice(1)]:a})//
@@ -348,7 +369,7 @@ function html(e,...ar){
 
     //TEMPORARY CLEANUP
     str=null
-    args=null
+    //args=null
 
 
 
@@ -386,6 +407,12 @@ html.plain=HTML
 
 //HTMLElement.prototype.inner=function(e){this.clear();this.appendChild(e)}
 
+let locked=true
+
+function lock(t){
+    locked=t
+}
+
 function Data(props){
     let e=html`<div><slot/></div>`
     if(props.name==undefined&&typeof props.name!="string"){
@@ -393,9 +420,8 @@ function Data(props){
         return e
     }
     e[$MEMO]=true
-
     let data={[props.name]:props.data}
-    e[$ACCESS]=()=>data
+    e[$ACCESS]=()=>locked?console.error("Access Denied!"):{...data}
     return e
 }
 components.set("data",Data)
