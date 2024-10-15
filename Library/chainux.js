@@ -44,6 +44,7 @@ let $ACCESS=Symbol()
 let $SETHOOKS=Symbol()
 let $MEMO=Symbol()
 let $ID=Symbol()
+let $COLLECTION=Symbol()//component içindeki bütün elementleri döndüren fonksiyonun adı e[$COLLECTION]==[div,div....] sadece o componente ait elementleri döndürür tekrar kullanım sağlar
 
 //COMPLETE
 new MutationObserver((M)=>{
@@ -98,12 +99,14 @@ function collect(e){
 }
 
 const global={
+    index:0,//Render ID
     renders:[],
     stateContext:[]
 }
 
 //for Components
 function Render(f,call){
+    global.index++
     let g=global.renders
     g.push[{hooks:{},watchers:[]}]
     let o=f.call(call)//output
@@ -111,7 +114,7 @@ function Render(f,call){
     collect(o).forEach(e=>{
         if(!t&&e[$SETHOOKS]){
             e[$SETHOOKS]()
-            t=true
+            t=e[$ID]
         }
     })
 
@@ -120,6 +123,7 @@ function Render(f,call){
         g.pop()
     }else{
         collect(o).forEach(e=>{
+            //burada aynı iddekileri silmeli sadece!
             if(e[$SETHOOKS]){
                 delete e[$SETHOOKS]
             }
@@ -235,9 +239,8 @@ function componentProcess(target){
     return compiled
 }
 
-let elementID=0
 function html(e,...ar){
-    let id=++elementID
+    let id=global.index
     let str
     let args=[...ar]
     e.forEach((a,i)=>{str+=a;args.length!==i?str+=key:""})
@@ -245,6 +248,7 @@ function html(e,...ar){
     str=str.replaceAll("<>", "<div>").replaceAll("</>", "</div>");//TEMPORARY
     if(str.includes("/>")){str=nM(str)}
     let element=HTML(str).firstElementChild
+    let collection=[]//Bütün parçalanmış elementler
     let subcomponents=[]
     let fC=false//is first element component?
 
